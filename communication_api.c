@@ -202,13 +202,13 @@ int ReadData(uint8* rdData, int byteCnt)
 	
 #endif    
   /* Read the data bytes */      
-  char c;
+  uint8 dataIndexCntr = 0;
   while (byteCnt>0)
     {
       // if(UART_GetRxBufferSize() > 0u)
       //  {
       //    rdData[dataIndexCntr]=UART_GetChar();
-      if ( read(tty_fd,&c,1) == -1 ) {
+      if ( read(tty_fd,&rdData[dataIndexCntr++],1) == -1 ) {
 	printf("ERROR: reading data from serial port: %s\n",strerror(errno));
 	return(CYRET_ERR_COMM_MASK);
       }
