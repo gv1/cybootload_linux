@@ -1,14 +1,56 @@
 #include <string.h>
-#include "StringImage.h" 
+// #include "StringImage.h" 
 #include "communication_api.h" 
 #include "cybtldr_api.h"
 #include "cybtldr_command.h"
 #include "cybtldr_parse.h" 
 #include "cybtldr_utils.h"
+#include <errno.h>
+#include <stdlib.h>
 
 CyBtldr_CommunicationsData comm1 ;
 typedef     unsigned short uint16;
 uint16 BootloadStringImage(const char *bootloadImagePtr[],unsigned int lineCount );
+
+uint16 readCyacd(const char * fn, int * lines, char *** ret) 
+{
+  FILE * fin = fopen(fn,"r");
+  if ( fin == NULL ) {
+    printf("Error opening %s, %s\n",fn,strerror(errno));
+    return(CYRET_ERR_FILE) ;
+  }
+  ssize_t read =  0;
+  size_t len = 0;
+  char * line = NULL;
+  char *buf[1000];
+  *lines = 0;
+  while ( !feof(fin) ) {
+    read = getline(&line,&len,fin);
+    line[strlen(line)-2]='\0'; // replace newline
+    buf[*lines]=strdup(line);
+    if (( read == -1 ) && !feof(fin)) {
+      printf("Error %s\n",strerror(errno));
+      return CYRET_ERR_FILE;
+    } 
+    // printf("Read line %d %zu : %p\n",*lines,read,line);
+    // printf("%s",buf[*lines]);
+    (*lines)++;
+    // printf("Read %zu : %s\n",read,line);
+  }
+  (*lines)--;
+  *ret = (char **)malloc(sizeof(char*)**lines);
+  if (*ret == NULL) {
+    printf("Error allocating memory\n");
+    printf("%s\n",strerror(errno));
+    return(CYRET_ABORT);    
+  }
+  int i;
+  for(i=0; i<*lines; i++)  {
+    	(*ret)[i]=buf[i];
+	// printf("%s",(*ret)[i]);
+  }
+  free(line);
+}   
 
 // see cybtldr_utils.h
 // host error
@@ -127,13 +169,21 @@ int main()
 {
   uint16 error = 0;
   printf("Bootloading\n");
+
+  int lines;
+  char ** stringImage;
+  readCyacd("./Bootloadable Blinking LED.cyacd",&lines,&stringImage);
+  int i;
+  printf("Read Total lines = %d from .cyacd file\n",lines);
+
   comm1.OpenConnection = &OpenConnection;
   comm1.CloseConnection = &CloseConnection;
   comm1.ReadData = &ReadData;
   comm1.WriteData =&WriteData;
   comm1.MaxTransferSize =64;
   /* Bootloadable Blinking LED.cyacd */
-  error = BootloadStringImage(stringImage,LINE_CNT);
+  // error = BootloadStringImage(stringImage,LINE_CNT);
+  error = BootloadStringImage((const char **)stringImage,lines);
   // error = BootloadStringImage(stringImage_6,LINE_CNT_6);
   if(error == CYRET_SUCCESS)
     {	

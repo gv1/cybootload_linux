@@ -9,7 +9,6 @@
  ********************************************************************************/
 
 #include "communication_api.h"
-//#include <device.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -20,12 +19,16 @@
 #include <errno.h>
 
 typedef     unsigned short uint16;
+
 #define MODEMDEV "/dev/ttyACM0"
+#define COMSPEED B115200
+
 static struct termios tio;
 static struct termios stdio;
 static struct termios old_stdio;
 static int tty_fd;
 extern int errno;
+
 /*******************************************************************************
  * Function Name: OpenConnection
  ********************************************************************************
@@ -48,14 +51,17 @@ int OpenConnection(void)
   */
 
   // tty_fd=open(argv[1], O_RDWR | O_NONBLOCK);      
-  tty_fd=open(MODEMDEV, O_RDWR | O_NONBLOCK); 
+  tty_fd=open(MODEMDEV, O_RDWR | O_NOCTTY | O_SYNC); 
   if ( tty_fd == -1) {
     printf("ERROR opening %s : %s\n",MODEMDEV,strerror(errno));
     printf("Exit\n");
     exit(1);
     return (CYRET_ERR_FILE);
   }
-  tcgetattr(STDOUT_FILENO,&old_stdio);
+  if ( tcgetattr(STDOUT_FILENO,&old_stdio) == -1 ) {
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);
+  }
   memset(&stdio,0,sizeof(stdio));
   stdio.c_iflag=0;
   stdio.c_oflag=0;
@@ -63,9 +69,18 @@ int OpenConnection(void)
   stdio.c_lflag=0;
   stdio.c_cc[VMIN]=1;
   stdio.c_cc[VTIME]=0;
-  tcsetattr(STDOUT_FILENO,TCSANOW,&stdio);
-  tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio);
-  fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
+  if ( tcsetattr(STDOUT_FILENO,TCSANOW,&stdio) == -1) {
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);
+  }
+  if (tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio) == -1){
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);    
+  }
+  if (fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK) == -1) {     // make the reads non-blocking 
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);    
+  }
   
   memset(&tio,0,sizeof(tio));
   tio.c_iflag=0;
@@ -74,11 +89,21 @@ int OpenConnection(void)
   tio.c_lflag=0;
   tio.c_cc[VMIN]=1;
   tio.c_cc[VTIME]=5;
-  
 
-  cfsetospeed(&tio,B115200);            // 115200 baud
-  cfsetispeed(&tio,B115200);            // 115200 baud
-  tcsetattr(tty_fd,TCSANOW,&tio);
+
+
+  if ( cfsetospeed(&tio,COMSPEED) == -1) {            // 115200 baud
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);    
+  }
+  if (cfsetispeed(&tio,COMSPEED) == -1) {            // 115200 baud
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);     
+  }
+  if (tcsetattr(tty_fd,TCSANOW,&tio) == -1) {
+    printf("Error %s\n",strerror(errno));
+    return (CYRET_ERR_FILE);    
+  }
   return(CYRET_SUCCESS);
 }
 
@@ -103,6 +128,7 @@ int CloseConnection(void)
   /*
     UART_Stop();
   */
+  printf("Closing UART connection\n");
   close(tty_fd);
   tcsetattr(STDOUT_FILENO,TCSANOW,&old_stdio);
   return(CYRET_SUCCESS);
@@ -126,37 +152,10 @@ int CloseConnection(void)
  *******************************************************************************/
 int WriteData(uint8* wrData, int byteCnt)
 {
-  // write(tty_fd,wrData,byteCnt);
-  
-  uint16 timeOut =1;
-		
-  /* Clears TX and RX FIFOs and the status registers */
-  // UART_ClearRxBuffer();
-  // UART_ClearTxBuffer();
-	
-  /* Send the data*/   
-  // UART_PutArray(wrData, byteCnt);
-  int i;
-  for (i=0; i< byteCnt; i++) {
-    if ( write(tty_fd,&wrData[i],1) == -1 ) {
-      printf("Error writing to serial port %s\n",strerror(errno));
-      return (CYRET_ERR_COMM_MASK);
-    }
+  if (write(tty_fd,wrData,byteCnt) == -1){
+    printf("ERROR: writing data to serial port: %s\n",strerror(errno));
+    return(CYRET_ERR_COMM_MASK);
   }
-	
-#if 0
-  /* Wait till send operation is complete or timeout  */
-  while(!(UART_ReadTxStatus() & UART_TX_STS_COMPLETE))
-    {
-      timeOut++;
-      /* Check for timeout and if so exit with communication error code*/
-      if(timeOut == 0)
-	{
-	  return(CYRET_ERR_COMM_MASK);
-	}	
-    }
-				
-#endif
   return(CYRET_SUCCESS);
 }
 
@@ -179,43 +178,31 @@ int WriteData(uint8* wrData, int byteCnt)
  *******************************************************************************/
 int ReadData(uint8* rdData, int byteCnt)
 {
-  // read(tty_fd,rdData,byteCnt);
-#if 0
-  // uint16 timeOut =1;
-  // uint8 dataIndexCntr = 0;
-    
-	
-  /* Clears TX and RX FIFOs and the status registers */	
-  // UART_ClearRxBuffer();
-  UART_ClearTxBuffer();
-	
-  /* Wait until timeout  */
-  while(UART_GetRxBufferSize() == 0u)
-    {
-      timeOut++;
-      /* Check for timeout and if so exit with communication error code*/
-      if(timeOut == 0)
-	{			
-	  return(CYRET_ERR_COMM_MASK);
-	}	
-    }
-	
-#endif    
+  //  read(tty_fd,rdData,byteCnt);
   /* Read the data bytes */      
+  uint16 timeOut =1;
   uint8 dataIndexCntr = 0;
+  while(read(tty_fd,&rdData[dataIndexCntr],1) == -1 ) {
+    timeOut++;
+    if(timeOut == 0)
+      {
+	printf("Error: no reply from device\n");
+	return(CYRET_ERR_COMM_MASK);
+      }
+  }
+  dataIndexCntr++;
+  byteCnt--;
   while (byteCnt>0)
     {
-      // if(UART_GetRxBufferSize() > 0u)
-      //  {
-      //    rdData[dataIndexCntr]=UART_GetChar();
       if ( read(tty_fd,&rdData[dataIndexCntr++],1) == -1 ) {
 	printf("ERROR: reading data from serial port: %s\n",strerror(errno));
 	return(CYRET_ERR_COMM_MASK);
       }
-      // dataIndexCntr++;
+      if(usleep(1)==-1){
+	printf("Error %s\n",strerror(errno));
+      }
       byteCnt--;
-      //  }
-    }	
+    }
   return(CYRET_SUCCESS);
 }
 

@@ -1,4 +1,2 @@
 An attempt to use Cypress AN68272 "UART Bootloader Host" on Linux, by modifying
 communication_api.c and main.c
-see gdb.log for log of an attempt to run command with CY8CKIT-049-41XX.
-Status: Fail to program.
