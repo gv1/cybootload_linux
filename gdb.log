@@ -1,0 +1,505 @@
+Breakpoint 1 at 0x8048cd4: file main.c, line 128.
+Breakpoint 2 at 0x804918c: file communication_api.c, line 131.
+
+Breakpoint 1, main () at main.c:128
+128	  uint16 error = 0;
+129	  printf("Bootloading\n");
+130	  comm1.OpenConnection = &OpenConnection;
+131	  comm1.CloseConnection = &CloseConnection;
+132	  comm1.ReadData = &ReadData;
+133	  comm1.WriteData =&WriteData;
+134	  comm1.MaxTransferSize =64;
+136	  error = BootloadStringImage(stringImage,LINE_CNT);
+BootloadStringImage (bootloadImagePtr=0x804e460 <stringImage>, lineCount=20) at main.c:171
+171	  uint16 err=0;
+177	  unsigned long blVer=0;
+189	  lineCntr = 0;
+192	  lineLen = strlen(bootloadImagePtr[lineCntr]);
+196	  err = CyBtldr_ParseHeader(lineLen ,(unsigned char *)bootloadImagePtr[lineCntr] , &siliconID , &siliconRev ,&packetChkSumType);
+CyBtldr_ParseHeader (bufSize=12, buffer=0x804b170 "041611931100", siliconId=0xbfffe404, siliconRev=0xbfffe403 "", chksum=0xbfffe402 "") at cybtldr_parse.c:79
+79	  const unsigned int LENGTH_ID     = 5;            //4-silicon id, 1-silicon rev
+80	  const unsigned int LENGTH_CHKSUM = LENGTH_ID + 1; //1-checksum type
+85	  int err = CyBtldr_FromAscii(bufSize, buffer, &rowSize, rowData);
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "") at cybtldr_parse.c:28
+28	  int err = CYRET_SUCCESS;
+30	  if (bufSize & 1) // Make sure even number of bytes
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=48 '0') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=52 '4') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=49 '1') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=54 '6') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004\026\006") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=49 '1') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=49 '1') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004\026\021") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=57 '9') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=51 '3') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004\026\021\223") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=49 '1') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=49 '1') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004\026\021\223\021") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+36		  rowData[i] = (CyBtldr_FromHex(buffer[i * 2]) << 4) | CyBtldr_FromHex(buffer[i * 2 + 1]);
+CyBtldr_FromHex (value=48 '0') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromHex (value=48 '0') at cybtldr_parse.c:16
+16	  if ('0' <= value && value <= '9')
+17	    return (unsigned char)(value - '0');
+23	}
+CyBtldr_FromAscii (bufSize=12, buffer=0x804b170 "041611931100", rowSize=0xbfffe3ca, rowData=0xbfffe0ca "\004\026\021\223\021") at cybtldr_parse.c:34
+34	      for (i = 0; i < bufSize / 2; i++)
+38	      *rowSize = i;
+41	  return err;
+42	}
+CyBtldr_ParseHeader (bufSize=12, buffer=0x804b170 "041611931100", siliconId=0xbfffe404, siliconRev=0xbfffe403 "", chksum=0xbfffe402 "") at cybtldr_parse.c:87
+87	  if (CYRET_SUCCESS == err)
+89	      if (rowSize >= LENGTH_CHKSUM)
+90		*chksum = rowData[5];
+91	      if (rowSize >= LENGTH_ID)
+93		  *siliconId = (rowData[0] << 24) | (rowData[1] << 16) | (rowData[2] << 8) | (rowData[3]);
+94		  *siliconRev = rowData[4];
+100	  return err;
+101	}
+BootloadStringImage (bootloadImagePtr=0x804e460 <stringImage>, lineCount=20) at main.c:201
+201	  CyBtldr_SetCheckSumType((CyBtldr_ChecksumType)packetChkSumType);
+CyBtldr_SetCheckSumType (chksumType=SUM_CHECKSUM) at cybtldr_command.c:55
+55	  CyBtldr_Checksum = chksumType;
+56	}
+BootloadStringImage (bootloadImagePtr=0x804e460 <stringImage>, lineCount=20) at main.c:203
+203	  if(err==CYRET_SUCCESS)
+206	      err = CyBtldr_StartBootloadOperation(&comm1 ,siliconID, siliconRev ,&blVer);
+CyBtldr_StartBootloadOperation (comm=0x804e5ac <comm1>, expSiId=68555155, expSiRev=17 '\021', blVer=0xbfffe528) at cybtldr_api.c:84
+84	  const unsigned long SUPPORTED_BOOTLOADER = 0x010000;
+85	  const unsigned long BOOTLOADER_VERSION_MASK = 0xFF0000;
+87	  unsigned long inSize = 0;
+88	  unsigned long outSize = 0;
+89	  unsigned long siliconId = 0;
+92	  unsigned char siliconRev = 0;
+93	  unsigned char status = CYRET_SUCCESS;
+96	  g_comm = comm;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+98	    g_validRows[i] = NO_FLASH_ARRAY_DATA;
+97	  for (i = 0; i < MAX_FLASH_ARRAYS; i++)
+100	  err = g_comm->OpenConnection();
+OpenConnection () at communication_api.c:51
+51	  tty_fd=open(MODEMDEV, O_RDWR | O_NONBLOCK); 
+52	  if ( tty_fd == -1) {
+58	  tcgetattr(STDOUT_FILENO,&old_stdio);
+59	  memset(&stdio,0,sizeof(stdio));
+60	  stdio.c_iflag=0;
+61	  stdio.c_oflag=0;
+62	  stdio.c_cflag=0;
+63	  stdio.c_lflag=0;
+64	  stdio.c_cc[VMIN]=1;
+65	  stdio.c_cc[VTIME]=0;
+66	  tcsetattr(STDOUT_FILENO,TCSANOW,&stdio);
+67	  tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio);
+68	  fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
+70	  memset(&tio,0,sizeof(tio));
+71	  tio.c_iflag=0;
+72	  tio.c_oflag=0;
+73	  tio.c_cflag=CS8|CREAD|CLOCAL;           // 8n1, see termios.h for more information
+74	  tio.c_lflag=0;
+75	  tio.c_cc[VMIN]=1;
+76	  tio.c_cc[VTIME]=5;
+79	  cfsetospeed(&tio,B115200);            // 115200 baud
+80	  cfsetispeed(&tio,B115200);            // 115200 baud
+81	  tcsetattr(tty_fd,TCSANOW,&tio);
+82	  return(CYRET_SUCCESS);
+83	}
+CyBtldr_StartBootloadOperation (comm=0x804e5ac <comm1>, expSiId=68555155, expSiRev=17 '\021', blVer=0xbfffe528) at cybtldr_api.c:101
+101	  if (CYRET_SUCCESS != err)
+104	  if (CYRET_SUCCESS == err)
+105	    err = CyBtldr_CreateEnterBootLoaderCmd(inBuf, &inSize, &outSize);
+CyBtldr_CreateEnterBootLoaderCmd (cmdBuf=0xbfffe1b4 "\235kþ·d{ã·g\204\004\bà\215â·\001", cmdSize=0xbfffe3bc, resSize=0xbfffe3b8) at cybtldr_command.c:75
+75	  const unsigned long RESULT_DATA_SIZE = 8;
+78	  *resSize = BASE_CMD_SIZE + RESULT_DATA_SIZE;
+79	  *cmdSize = BASE_CMD_SIZE;
+80	  cmdBuf[0] = CMD_START;
+81	  cmdBuf[1] = CMD_ENTER_BOOTLOADER;
+82	  cmdBuf[2] = 0;
+83	  cmdBuf[3] = 0;
+84	  checksum = CyBtldr_ComputeChecksum(cmdBuf, BASE_CMD_SIZE - 3);
+CyBtldr_ComputeChecksum (buf=0xbfffe1b4 "\001\070", size=4) at cybtldr_command.c:16
+16	  if (CyBtldr_Checksum == CRC_CHECKSUM)
+45	      unsigned short sum = 0;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+49	      return (1 + ~sum);
+51	}
+CyBtldr_CreateEnterBootLoaderCmd (cmdBuf=0xbfffe1b4 "\001\070", cmdSize=0xbfffe3bc, resSize=0xbfffe3b8) at cybtldr_command.c:85
+85	  cmdBuf[4] = (unsigned char)checksum;
+86	  cmdBuf[5] = (unsigned char)(checksum >> 8);
+87	  cmdBuf[6] = CMD_STOP;
+89	  return CYRET_SUCCESS;
+90	}
+CyBtldr_StartBootloadOperation (comm=0x804e5ac <comm1>, expSiId=68555155, expSiRev=17 '\021', blVer=0xbfffe528) at cybtldr_api.c:106
+106	  if (CYRET_SUCCESS == err)
+107	    err = CyBtldr_TransferData(inBuf, inSize, outBuf, outSize);
+CyBtldr_TransferData (inBuf=0xbfffe1b4 "\001\070", inSize=7, outBuf=0xbfffdfb4 "", outSize=15) at cybtldr_api.c:25
+25	  int err = g_comm->WriteData(inBuf, inSize);
+
+Breakpoint 2, WriteData (wrData=0xbfffe1b4 "\001\070", byteCnt=7) at communication_api.c:131
+131	  uint16 timeOut =1;
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+160	  return(CYRET_SUCCESS);
+161	}
+CyBtldr_TransferData (inBuf=0xbfffe1b4 "\001\070", inSize=7, outBuf=0xbfffdfb4 "", outSize=15) at cybtldr_api.c:27
+27	  if (CYRET_SUCCESS == err)
+28	    err = g_comm->ReadData(outBuf, outSize);
+ReadData (rdData=0xbfffdfb4 "", byteCnt=15) at communication_api.c:206
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+211	      if ( read(tty_fd,&c,1) == -1 ) {
+216	      byteCnt--;
+206	  while (byteCnt>0)
+219	  return(CYRET_SUCCESS);
+220	}
+CyBtldr_TransferData (inBuf=0xbfffe1b4 "\001\070", inSize=7, outBuf=0xbfffdfb4 "", outSize=15) at cybtldr_api.c:30
+30	  if (CYRET_SUCCESS != err)
+33	  return err;
+34	}
+CyBtldr_StartBootloadOperation (comm=0x804e5ac <comm1>, expSiId=68555155, expSiRev=17 '\021', blVer=0xbfffe528) at cybtldr_api.c:108
+108	  if (CYRET_SUCCESS == err)
+109	    err = CyBtldr_ParseEnterBootLoaderCmdResult(outBuf, outSize, &siliconId, &siliconRev, blVer, &status);
+CyBtldr_ParseEnterBootLoaderCmdResult (cmdBuf=0xbfffdfb4 "", cmdSize=15, siliconId=0xbfffe3b4, siliconRev=0xbfffdfb3 "", blVersion=0xbfffe528, status=0xbfffdfb2 "") at cybtldr_command.c:94
+94	  const unsigned long RESULT_DATA_SIZE = 8;
+95	  const unsigned long RESULT_SIZE = BASE_CMD_SIZE + RESULT_DATA_SIZE;
+96	  int err = CYRET_SUCCESS;
+98	  if (cmdSize != RESULT_SIZE)
+100	  else if (cmdBuf[1] != CYRET_SUCCESS)
+101	    err = CYRET_ERR_BTLDR_MASK | (*status = cmdBuf[1]);
+112	  return err;
+113	}
+CyBtldr_StartBootloadOperation (comm=0x804e5ac <comm1>, expSiId=68555155, expSiRev=17 '\021', blVer=0xbfffe528) at cybtldr_api.c:112
+112	  if (CYRET_SUCCESS == err)
+122	  return err;
+123	}
+BootloadStringImage (bootloadImagePtr=0x804e460 <stringImage>, lineCount=20) at main.c:207
+207	      lineCntr++ ;
+208	      while((err == CYRET_SUCCESS)&& ( lineCntr <  lineCount ))
+235	      CyBtldr_EndBootloadOperation();
+CyBtldr_EndBootloadOperation () at cybtldr_api.c:179
+179	  int err = CyBtldr_CreateExitBootLoaderCmd(inBuf, &inSize, &outSize);
+CyBtldr_CreateExitBootLoaderCmd (cmdBuf=0xbfffe1c4 "\001", cmdSize=0xbfffe3c8, resSize=0xbfffe3c4) at cybtldr_command.c:117
+117	  const unsigned long COMMAND_DATA_SIZE = 1;
+118	  const unsigned int COMMAND_SIZE = BASE_CMD_SIZE + COMMAND_DATA_SIZE;
+121	  *resSize = BASE_CMD_SIZE;
+122	  *cmdSize = COMMAND_SIZE;
+123	  cmdBuf[0] = CMD_START;
+124	  cmdBuf[1] = CMD_EXIT_BOOTLOADER;
+125	  cmdBuf[2] = (unsigned char)COMMAND_DATA_SIZE;
+126	  cmdBuf[3] = (unsigned char)(COMMAND_DATA_SIZE >> 8);
+127	  cmdBuf[4] = 0;
+128	  checksum = CyBtldr_ComputeChecksum(cmdBuf, COMMAND_SIZE - 3);
+CyBtldr_ComputeChecksum (buf=0xbfffe1c4 "\001;\001", size=5) at cybtldr_command.c:16
+16	  if (CyBtldr_Checksum == CRC_CHECKSUM)
+45	      unsigned short sum = 0;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+47		sum += *buf++;
+46	      while (size-- > 0)
+49	      return (1 + ~sum);
+51	}
+CyBtldr_CreateExitBootLoaderCmd (cmdBuf=0xbfffe1c4 "\001;\001", cmdSize=0xbfffe3c8, resSize=0xbfffe3c4) at cybtldr_command.c:129
+129	  cmdBuf[5] = (unsigned char)checksum;
+130	  cmdBuf[6] = (unsigned char)(checksum >> 8);
+131	  cmdBuf[7] = CMD_STOP;
+133	  return CYRET_SUCCESS;
+134	}
+CyBtldr_EndBootloadOperation () at cybtldr_api.c:180
+180	  if (CYRET_SUCCESS == err)
+182	      err = g_comm->WriteData(inBuf, inSize);
+
+Breakpoint 2, WriteData (wrData=0xbfffe1c4 "\001;\001", byteCnt=8) at communication_api.c:131
+131	  uint16 timeOut =1;
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+141	    if ( write(tty_fd,&wrData[i],1) == -1 ) {
+140	  for (i=0; i< byteCnt; i++) {
+160	  return(CYRET_SUCCESS);
+161	}
+CyBtldr_EndBootloadOperation () at cybtldr_api.c:184
+184	      if (CYRET_SUCCESS == err)
+185		err = g_comm->CloseConnection();
+CloseConnection () at communication_api.c:106
+106	  close(tty_fd);
+107	  tcsetattr(STDOUT_FILENO,TCSANOW,&old_stdio);
+108	  return(CYRET_SUCCESS);
+109	}
+CyBtldr_EndBootloadOperation () at cybtldr_api.c:187
+187	      if (CYRET_SUCCESS != err)
+190	  g_comm = NULL;
+192	  return err;
+193	}
+BootloadStringImage (bootloadImagePtr=0x804e460 <stringImage>, lineCount=20) at main.c:237
+237	  return(err); 
+238	}
+main () at main.c:138
+138	  if(error == CYRET_SUCCESS)
+143	    if(error & CYRET_ERR_COMM_MASK) /* Check for comm error*/
+147	      printf("Bootload Error: ");
+148	      error_info_bootldr(error);	
+error_info_bootldr (error=16633) at main.c:76
+76	  switch(error)
+122	      printf("An unknown error occured [0x%X]\n",error);
+123	      break;
+125	}
+main () at main.c:151
+151	}
+0xb7e3e5a5 in __libc_start_main () from /lib/libc.so.6
+Single stepping until exit from function __libc_start_main,
+which has no line number information.
+[Inferior 1 (process 2131) exited with code 042]
+run.gdb:20: Error in sourced command file:
+The program is not being run.
