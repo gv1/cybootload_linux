@@ -8,6 +8,8 @@ all: cybootload_linux
 cybootload_linux: $(OBJ)
 	gcc -g -o $@ $+
 
+test:
+	./cybootload_linux "Bootloadable Blinking LED.cyacd"
 clean:
 	-rm *.o cybootload_linux
 

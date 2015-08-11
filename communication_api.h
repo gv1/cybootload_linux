@@ -8,12 +8,13 @@
  ********************************************************************************/
 
 #include <stdint.h>
-// #include "UART.h"
-// #include "CyLib.h"
 #include "cybtldr_utils.h"
 
 typedef     unsigned char uint8;
+typedef     unsigned short uint16;
 
+#define MODEMDEV "/dev/ttyACM0"
+#define COMSPEED B115200
 
 /* Function declarations */
 int OpenConnection(void);

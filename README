@@ -1,2 +1,12 @@
 An attempt to use Cypress AN68272 "UART Bootloader Host" on Linux, by modifying
 communication_api.c and main.c
+
+Build:
+	make
+	make test
+
+Usage:
+	../cybootload_linux "./Bootloadable Blinking LED.cyacd"
+
+If Operation seems stuck ( no timeout yet ), remove the device from USB port.
+

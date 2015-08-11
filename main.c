@@ -5,50 +5,59 @@
 #include "cybtldr_command.h"
 #include "cybtldr_parse.h" 
 #include "cybtldr_utils.h"
-#include <errno.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 
 CyBtldr_CommunicationsData comm1 ;
 typedef     unsigned short uint16;
 uint16 BootloadStringImage(const char *bootloadImagePtr[],unsigned int lineCount );
 
+char * serial_port = NULL;
+int  serial_speed = 115200;
+
 uint16 readCyacd(const char * fn, int * lines, char *** ret) 
 {
   FILE * fin = fopen(fn,"r");
-  if ( fin == NULL ) {
-    printf("Error opening %s, %s\n",fn,strerror(errno));
-    return(CYRET_ERR_FILE) ;
-  }
   ssize_t read =  0;
   size_t len = 0;
   char * line = NULL;
-  char *buf[1000];
+  int i=0;
   *lines = 0;
+  if (fn == NULL){
+    printf("[ERROR] .cyacd file name is null\n");
+    return(CYRET_ERR_FILE);
+  }
+  printf("[INFO] Reading cyacd file %s\n",fn);
+  if ( fin == NULL ) {
+    printf("[ERROR] opening %s, %s\n",fn,strerror(errno));
+    return(CYRET_ERR_FILE) ;
+  }
   while ( !feof(fin) ) {
-    read = getline(&line,&len,fin);
-    line[strlen(line)-2]='\0'; // replace newline
-    buf[*lines]=strdup(line);
-    if (( read == -1 ) && !feof(fin)) {
-      printf("Error %s\n",strerror(errno));
-      return CYRET_ERR_FILE;
-    } 
-    // printf("Read line %d %zu : %p\n",*lines,read,line);
-    // printf("%s",buf[*lines]);
+    if(((getline(&line,&len,fin) == -1) && !feof(fin))) {
+      printf("[ERROR] %s\n",strerror(errno));
+      return(CYRET_ERR_FILE);
+    }
     (*lines)++;
-    // printf("Read %zu : %s\n",read,line);
   }
   (*lines)--;
+  rewind(fin);
   *ret = (char **)malloc(sizeof(char*)**lines);
   if (*ret == NULL) {
-    printf("Error allocating memory\n");
-    printf("%s\n",strerror(errno));
+    printf("[ERROR] Cannot allocating memory %s\n",strerror(errno));
     return(CYRET_ABORT);    
   }
-  int i;
-  for(i=0; i<*lines; i++)  {
-    	(*ret)[i]=buf[i];
-	// printf("%s",(*ret)[i]);
+  i=0;
+  while ( !feof(fin) ) {
+    read = getline(&line,&len,fin);
+    if (( read == -1 ) && !feof(fin)) {
+      printf("[ERROR] %s\n",strerror(errno));
+      return CYRET_ERR_FILE;
+    } 
+    line[strlen(line)-2]='\0'; // replace newline
+    (*ret)[i++]=strdup(line);
   }
+  printf("[INFO] Read in %d lines from %s\n",*lines,fn);
   free(line);
 }   
 
@@ -59,55 +68,55 @@ void error_info_host(uint16 error)
   switch(error) 
     {
     case CYRET_ERR_FILE:
-      printf("File is not accessable [0x%X]\n",error);
+      printf("[ERROR] File is not accessable [0x%X]\n",error);
       break;
     case CYRET_ERR_EOF:
-      printf("Reached the end of the file [0x%X]\n",error);
+      printf("[ERROR] Reached the end of the file [0x%X]\n",error);
       break;	
     case CYRET_ERR_LENGTH:
-      printf("The amount of data available is outside the expected range [0x%X]\n",error);
+      printf("[ERROR] The amount of data available is outside the expected range [0x%X]\n",error);
       break;
     case CYRET_ERR_DATA:
-      printf("The data is not of the proper form [0x%X]\n",error);
+      printf("[ERROR] The data is not of the proper form [0x%X]\n",error);
       break;
     case CYRET_ERR_CMD:
-      printf("The command is not recognized [0x%X]\n",error);
+      printf("[ERROR] The command is not recognized [0x%X]\n",error);
       break;
     case CYRET_ERR_DEVICE:
-      printf("The expected device does not match the detected device [0x%X]\n",error);
+      printf("[ERROR] The expected device does not match the detected device [0x%X]\n",error);
       break;
     case CYRET_ERR_VERSION:
-      printf("The bootloader version detected is not supported [0x%X]\n",error);
+      printf("[ERROR] The bootloader version detected is not supported [0x%X]\n",error);
       break;
     case CYRET_ERR_CHECKSUM:
-      printf("The checksum does not match the expected value [0x%X]\n",error);
+      printf("[ERROR] The checksum does not match the expected value [0x%X]\n",error);
       break;
     case CYRET_ERR_ARRAY:
-      printf("The flash array is not valid [0x%X]\n",error);
+      printf("[ERROR] The flash array is not valid [0x%X]\n",error);
       break;
     case CYRET_ERR_ROW:
-      printf("The flash row is not valid [0x%X]\n",error);
+      printf("[ERROR] The flash row is not valid [0x%X]\n",error);
       break;
     case CYRET_ERR_BTLDR:
-      printf("The bootloader is not ready to process data [0x%X]\n",error);
+      printf("[ERROR] The bootloader is not ready to process data [0x%X]\n",error);
       break;
     case CYRET_ERR_ACTIVE:
-      printf("The application is currently marked as active [0x%X]\n",error);
+      printf("[ERROR] The application is currently marked as active [0x%X]\n",error);
       break;
     case CYRET_ERR_UNK:
-      printf("The operation was aborted [0x%X]\n",error);
+      printf("[ERROR] The operation was aborted [0x%X]\n",error);
       break;
     case CYRET_ABORT:
-      printf("The operation was aborted [0x%X]\n",error);
+      printf("[ERROR] The operation was aborted [0x%X]\n",error);
       break;
     case CYRET_ERR_COMM_MASK:
-      printf("The communications object reported an error [0x%X]\n",error);
+      printf("[ERROR] The communications object reported an error [0x%X]\n",error);
       break;
     case CYRET_ERR_BTLDR_MASK:
-      printf("The bootloader reported an error [0x%X]\n",error);
+      printf("[ERROR] The bootloader reported an error [0x%X]\n",error);
       break;
     default:
-      printf("An unknown error occured [0x%X]\n",error);
+      printf("[ERROR] An unknown error occured [0x%X]\n",error);
       break;
     }
 }
@@ -118,86 +127,104 @@ void error_info_bootldr(uint16 error)
   switch(error)
     {
     case CYBTLDR_STAT_SUCCESS:
-      printf("Completed successfully [0x%X]\n",error);
+      printf("[ERROR] Completed successfully [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_KEY:
-      printf("The provided key does not match the expected value [0x%X]\n",error);
+      printf("[ERROR] The provided key does not match the expected value [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_VERIFY:
-      printf("The verification of flash failed [0x%X]\n",error);
+      printf("[ERROR] The verification of flash failed [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_LENGTH:
-      printf("The amount of data available is outside the expected range [0x%X]\n",error);
+      printf("[ERROR] The amount of data available is outside the expected range [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_DATA:
-      printf("The data is not of the proper form [0x%X]\n",error);
+      printf("[ERROR] The data is not of the proper form [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_CMD:
-      printf("The command is not recognized [0x%X]\n",error);
+      printf("[ERROR] The command is not recognized [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_DEVICE:
-      printf("The expected device does not match the detected device [0x%X]\n",error);
+      printf("[ERROR] The expected device does not match the detected device [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_VERSION:
-      printf("The bootloader version detected is not supported [0x%X]\n",error);
+      printf("[ERROR] The bootloader version detected is not supported [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_CHECKSUM:
-      printf("The checksum does not match the expected value [0x%X]\n",error);
+      printf("[ERROR] The checksum does not match the expected value [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_ARRAY:
-      printf("The flash array is not valid [0x%X]\n",error);
+      printf("[ERROR] The flash array is not valid [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_ROW:
-      printf("The flash row is not valid [0x%X]\n",error);
+      printf("[ERROR] The flash row is not valid [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_PROTECT:
-      printf("The flash row is protected and can not be programmed [0x%X]\n",error);
+      printf("[ERROR] The flash row is protected and can not be programmed [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_APP:
-      printf("The application is not valid and cannot be set as active [0x%X]\n",error);
+      printf("[ERROR] The application is not valid and cannot be set as active [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_ACTIVE:
-      printf("The application is currently marked as active [0x%X]\n",error);
+      printf("[ERROR] The application is currently marked as active [0x%X]\n",error);
       break;
     case CYBTLDR_STAT_ERR_UNK:
     default:
-      printf("An unknown error occured [0x%X]\n",error);
+      printf("[ERROR] An unknown error occured [0x%X]\n",error);
       break;
     }
 }
-int main()
+int main(int argc, char **argv)
 {
   uint16 error = 0;
-  printf("Bootloading\n");
-
   int lines;
   char ** stringImage;
-  readCyacd("./Bootloadable Blinking LED.cyacd",&lines,&stringImage);
   int i;
-  printf("Read Total lines = %d from .cyacd file\n",lines);
+  int opt;
+  while ((opt = getopt(argc, argv, "d:s:")) != -1) {
+    switch (opt) {
+    case 'd':
+      serial_port = optarg;
+      break;
+    case 's':      
+      serial_speed = atoi(optarg);      
+      break;
+    default: /* '?' */
+      fprintf(stderr, "[INFO] Usage: %s [-d device] [-s speed] filename\n",
+	      argv[0]);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if (optind >= argc) {
+    fprintf(stderr, "[ERROR] Expected .cyacd filename after options\n");
+    exit(EXIT_FAILURE);
+  }
+ 
+  printf("[INFO] Starting boot loader operation\n");
+  printf("[INFO] Serial Port: %s\n",MODEMDEV);
+  
+  readCyacd(argv[optind],&lines,&stringImage);
 
   comm1.OpenConnection = &OpenConnection;
   comm1.CloseConnection = &CloseConnection;
   comm1.ReadData = &ReadData;
   comm1.WriteData =&WriteData;
   comm1.MaxTransferSize =64;
+
   /* Bootloadable Blinking LED.cyacd */
   // error = BootloadStringImage(stringImage,LINE_CNT);
   error = BootloadStringImage((const char **)stringImage,lines);
   // error = BootloadStringImage(stringImage_6,LINE_CNT_6);
+
   if(error == CYRET_SUCCESS)
     {	
-      printf("Bootloaded-Green\n");
-      printf("P6.1 to BL Blue \n");
-    } else {
-    if(error & CYRET_ERR_COMM_MASK) /* Check for comm error*/
-      {
-	printf("Communicatn Err \n");
-      } else {
-      printf("Bootload Error: ");
+      printf("[INFO] Bootloader operation succesful\n");
+    } else 
+    {
       error_info_bootldr(error);	
     }
-  }
+  return(0);
 }
 
 /****************************************************************************************************

@@ -18,10 +18,6 @@
 #include <termios.h>
 #include <errno.h>
 
-typedef     unsigned short uint16;
-
-#define MODEMDEV "/dev/ttyACM0"
-#define COMSPEED B115200
 
 static struct termios tio;
 static struct termios stdio;
@@ -44,44 +40,28 @@ extern int errno;
  *
  *
  *******************************************************************************/
+extern char * serial_port;
+extern int serial_speed;
 int OpenConnection(void)
 {
   /*
     UART_Start();
   */
-
+  int speed;
+  if (serial_port == NULL)
+    {
+      if ((serial_port = strdup(MODEMDEV)) == NULL) {
+	printf("[ERROR] malloc failed\n");
+	return(CYRET_ERR_FILE);
+      }
+    }
   // tty_fd=open(argv[1], O_RDWR | O_NONBLOCK);      
-  tty_fd=open(MODEMDEV, O_RDWR | O_NOCTTY | O_SYNC); 
+  tty_fd=open(serial_port, O_RDWR | O_NOCTTY | O_SYNC); 
   if ( tty_fd == -1) {
-    printf("ERROR opening %s : %s\n",MODEMDEV,strerror(errno));
-    printf("Exit\n");
+    printf("[ERROR] opening %s : %s\n",serial_port,strerror(errno));
     exit(1);
-    return (CYRET_ERR_FILE);
+    // return (CYRET_ERR_FILE);
   }
-  if ( tcgetattr(STDOUT_FILENO,&old_stdio) == -1 ) {
-    printf("Error %s\n",strerror(errno));
-    return (CYRET_ERR_FILE);
-  }
-  memset(&stdio,0,sizeof(stdio));
-  stdio.c_iflag=0;
-  stdio.c_oflag=0;
-  stdio.c_cflag=0;
-  stdio.c_lflag=0;
-  stdio.c_cc[VMIN]=1;
-  stdio.c_cc[VTIME]=0;
-  if ( tcsetattr(STDOUT_FILENO,TCSANOW,&stdio) == -1) {
-    printf("Error %s\n",strerror(errno));
-    return (CYRET_ERR_FILE);
-  }
-  if (tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio) == -1){
-    printf("Error %s\n",strerror(errno));
-    return (CYRET_ERR_FILE);    
-  }
-  if (fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK) == -1) {     // make the reads non-blocking 
-    printf("Error %s\n",strerror(errno));
-    return (CYRET_ERR_FILE);    
-  }
-  
   memset(&tio,0,sizeof(tio));
   tio.c_iflag=0;
   tio.c_oflag=0;
@@ -91,17 +71,37 @@ int OpenConnection(void)
   tio.c_cc[VTIME]=5;
 
 
-
-  if ( cfsetospeed(&tio,COMSPEED) == -1) {            // 115200 baud
-    printf("Error %s\n",strerror(errno));
+  switch(serial_speed) {
+  case 9600:
+    speed = B9600;
+    break;
+  case 19200:
+    speed = B19200;
+    break;
+  case 38400:
+    speed = B38400;
+    break;
+  case 57600:
+    speed = B57600;
+    break;
+  case 115200:
+    speed = B115200;
+    break;    
+  default:
+    speed = COMSPEED;
+    printf("[INFO] unsupported speed %d, defaulting to %d\n",serial_speed,speed);
+    break;
+  }
+  if ( cfsetospeed(&tio,speed) == -1) {            // 115200 baud
+    printf("[ERROR] %s\n",strerror(errno));
     return (CYRET_ERR_FILE);    
   }
-  if (cfsetispeed(&tio,COMSPEED) == -1) {            // 115200 baud
-    printf("Error %s\n",strerror(errno));
+  if (cfsetispeed(&tio,speed) == -1) {            // 115200 baud
+    printf("[ERROR] %s\n",strerror(errno));
     return (CYRET_ERR_FILE);     
   }
   if (tcsetattr(tty_fd,TCSANOW,&tio) == -1) {
-    printf("Error %s\n",strerror(errno));
+    printf("[ERROR] %s\n",strerror(errno));
     return (CYRET_ERR_FILE);    
   }
   return(CYRET_SUCCESS);
@@ -128,9 +128,8 @@ int CloseConnection(void)
   /*
     UART_Stop();
   */
-  printf("Closing UART connection\n");
+  printf("[INFO] Closing UART connection\n");
   close(tty_fd);
-  tcsetattr(STDOUT_FILENO,TCSANOW,&old_stdio);
   return(CYRET_SUCCESS);
 }
 
@@ -153,7 +152,7 @@ int CloseConnection(void)
 int WriteData(uint8* wrData, int byteCnt)
 {
   if (write(tty_fd,wrData,byteCnt) == -1){
-    printf("ERROR: writing data to serial port: %s\n",strerror(errno));
+    printf("[ERROR]: writing data to serial port: %s\n",strerror(errno));
     return(CYRET_ERR_COMM_MASK);
   }
   return(CYRET_SUCCESS);
@@ -186,7 +185,7 @@ int ReadData(uint8* rdData, int byteCnt)
     timeOut++;
     if(timeOut == 0)
       {
-	printf("Error: no reply from device\n");
+	printf("[ERROR] Read from target fail\n");
 	return(CYRET_ERR_COMM_MASK);
       }
   }
@@ -195,11 +194,11 @@ int ReadData(uint8* rdData, int byteCnt)
   while (byteCnt>0)
     {
       if ( read(tty_fd,&rdData[dataIndexCntr++],1) == -1 ) {
-	printf("ERROR: reading data from serial port: %s\n",strerror(errno));
+	printf("[ERROR] Reading data from serial port: %s\n",strerror(errno));
 	return(CYRET_ERR_COMM_MASK);
       }
       if(usleep(1)==-1){
-	printf("Error %s\n",strerror(errno));
+	printf("[ERROR] usleep : %s\n",strerror(errno));
       }
       byteCnt--;
     }
