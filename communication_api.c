@@ -20,8 +20,6 @@
 
 
 static struct termios tio;
-static struct termios stdio;
-static struct termios old_stdio;
 static int tty_fd;
 extern int errno;
 

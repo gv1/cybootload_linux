@@ -6,7 +6,43 @@ Build:
 	make test
 
 Usage:
-	../cybootload_linux "./Bootloadable Blinking LED.cyacd"
+	./cybootload_linux "./Bootloadable Blinking LED.cyacd"
+	./cybootload -d /dev/ttyACM0 CY8CKIT-049-41XX_PWM_Example.cyacd
+	./cybootload -d /dev/ttyACM0 -s 115200 CY8CKIT-049-41XX_UART_Example.cyacd
+
+Examples included:
+make test
+	./cybootload_linux "Bootloadable Blinking LED.cyacd"
+Once programmed, LED starts blinking at a slow speed.
+
+make test1
+	./cybootload_linux CY8CKIT-049-41XX_GPIO_Example.cyacd
+Once programmed, press SW1 swich on board to lit the LED. When SW1 is released,
+light goes off. 
+
+make test2
+	./cybootload_linux CY8CKIT-049-41XX_PWM_Example.cyacd
+Once programmed, LED lits from low intensity to high and then to low, and repeats.
+
+make test2
+	./cybootload_linux CY8CKIT-049-41XX_UART_Example.cyacd
+Once programmed, start minicom -D /dev/ttyACM0, and press SW1 switch on board. minicom
+displays "Hello World!".
 
 If Operation seems stuck ( no timeout yet ), remove the device from USB port.
+
+Ref:
+
+PSoC® 3, PSoC 4, and PSoC 5LP UART Bootloader AN68272 
+http://www.cypress.com/?rID=50230&source=AN68272
+
+https://en.wikibooks.org/wiki/Serial_Programming/Serial_Linux
+
+https://www.eewiki.net/display/microcontroller/Getting+Started+with+PSoC+4+Prototyping+Kits+-+CY8CKIT-049
+CY8CKIT-049-41XX GPIO_Example.zip
+https://www.eewiki.net/download/attachments/39256220/CY8CKIT-049-41XX_GPIO_Example.zip?version=1&modificationDate=1412268358807&api=v2
+CY8CKIT-049-41XX PWM_Example.zip
+https://www.eewiki.net/download/attachments/39256220/CY8CKIT-049-41XX_PWM_Example.zip?version=1&modificationDate=1412268383543&api=v2
+CY8CKIT-049-41XX UART_Example.zip
+https://www.eewiki.net/download/attachments/39256220/CY8CKIT-049-41XX_UART_Example.zip?version=1&modificationDate=1412268420980&api=v2
 

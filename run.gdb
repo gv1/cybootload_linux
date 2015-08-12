@@ -4,6 +4,7 @@ set logging on
 set $i = 0
 file cybootload_linux
 break main
+set args ./CY8CKIT-049-41XX_GPIO_Example.cyacd
 break WriteData 
 # break CyBtldr_StartBootloadOperation
 commands 2

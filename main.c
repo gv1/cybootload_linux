@@ -42,7 +42,7 @@ uint16 readCyacd(const char * fn, int * lines, char *** ret)
   }
   (*lines)--;
   rewind(fin);
-  *ret = (char **)malloc(sizeof(char*)**lines);
+  *ret = (char **)malloc(sizeof(char*)*(*lines));
   if (*ret == NULL) {
     printf("[ERROR] Cannot allocating memory %s\n",strerror(errno));
     return(CYRET_ABORT);    
@@ -58,7 +58,7 @@ uint16 readCyacd(const char * fn, int * lines, char *** ret)
     (*ret)[i++]=strdup(line);
   }
   printf("[INFO] Read in %d lines from %s\n",*lines,fn);
-  free(line);
+  return(CYRET_SUCCESS);
 }   
 
 // see cybtldr_utils.h
@@ -178,8 +178,7 @@ int main(int argc, char **argv)
 {
   uint16 error = 0;
   int lines;
-  char ** stringImage;
-  int i;
+  char *** stringImage = NULL;
   int opt;
   while ((opt = getopt(argc, argv, "d:s:")) != -1) {
     switch (opt) {
@@ -203,8 +202,15 @@ int main(int argc, char **argv)
  
   printf("[INFO] Starting boot loader operation\n");
   printf("[INFO] Serial Port: %s\n",MODEMDEV);
-  
-  readCyacd(argv[optind],&lines,&stringImage);
+  stringImage = (char ***)malloc(sizeof(char**));
+  readCyacd(argv[optind],&lines,stringImage);
+#if 0
+  int i;
+  for (i=0; i<lines; i++) {
+    printf("%s\n",(*stringImage)[i]);
+  }
+  return(0);
+#endif
 
   comm1.OpenConnection = &OpenConnection;
   comm1.CloseConnection = &CloseConnection;
@@ -214,7 +220,7 @@ int main(int argc, char **argv)
 
   /* Bootloadable Blinking LED.cyacd */
   // error = BootloadStringImage(stringImage,LINE_CNT);
-  error = BootloadStringImage((const char **)stringImage,lines);
+  error = BootloadStringImage((const char **)(*stringImage),lines);
   // error = BootloadStringImage(stringImage_6,LINE_CNT_6);
 
   if(error == CYRET_SUCCESS)
